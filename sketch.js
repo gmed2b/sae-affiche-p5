@@ -10,14 +10,18 @@ const middleSection = []
 const leftCircleSection = []
 const rightCircleSection = []
 
-const sectionWidth = 50
-const circleWidth = (3 * sectionWidth + sectionWidth / 2) * 2
+let sectionWidth, circleWidth
+let isWindowResized = false
 
 function setup() {
-	let widthRatio = 1
-	let heightRatio = 1.4142
-	let baseWidth = 1000
-	createCanvas(baseWidth, (baseWidth * heightRatio) / widthRatio)
+	// let widthRatio = 1
+	// let heightRatio = 1.25
+	// let baseWidth = windowHeight
+	// createCanvas(baseWidth, (baseWidth * heightRatio) / widthRatio)
+	createCanvas(windowWidth, windowHeight)
+
+	sectionWidth = height / 30
+	circleWidth = (3 * sectionWidth + sectionWidth / 2) * 2
 
 	for (let i = 7, c = 0; i >= 1; i -= 2, c++) {
 		middleSection.push(new Section(width / 2, 0, width / 2, height, i * sectionWidth, colors[c], sectionWidth))
@@ -36,20 +40,49 @@ function draw() {
 	background(26, 55, 95)
 
 	for (let i = 0; i < middleSection.length; i++) {
-		if (middleSection[i].isMouseInside(mouseX)) {
-			stroke(255)
-			leftCircleSection[i].color = [255, 255, 255]
-			rightCircleSection[i].color = [255, 255, 255]
-		} else {
-			stroke(middleSection[i].color)
-			leftCircleSection[i].color = colors[i]
-			rightCircleSection[i].color = colors[i]
+		if (!isWindowResized) {
+			if (middleSection[i].isMouseInside(mouseX) && i !== 3) {
+				stroke(255)
+				leftCircleSection[i].color = [255, 255, 255]
+				rightCircleSection[i].color = [255, 255, 255]
+			} else {
+				stroke(middleSection[i].color)
+				leftCircleSection[i].color = colors[i]
+				rightCircleSection[i].color = colors[i]
+			}
 		}
 		middleSection[i].draw()
-
 		leftCircleSection[i].draw()
 		rightCircleSection[i].draw()
 	}
+
+	if (isWindowResized) {
+		fill(0, 0, 0, 100)
+		rect(0, 0, width, height)
+		noStroke()
+		fill(255)
+		textSize(32)
+		textAlign(CENTER, CENTER)
+		text('Window has been resized\n Please reload.', 220, height / 3)
+		// create a button to reload the page
+		let reloadButton = createButton('Reload')
+		reloadButton.style('font-size', '32px')
+		reloadButton.style('padding', '10px')
+		reloadButton.style('background-color', '#fff')
+		reloadButton.style('border', 'none')
+		reloadButton.style('border-radius', '5px')
+		reloadButton.style('cursor', 'pointer')
+		reloadButton.style('outline', 'none')
+		reloadButton.position(170, height / 2.5)
+		reloadButton.mousePressed(() => {
+			location.reload()
+		})
+	}
+}
+
+function windowResized() {
+	isWindowResized = true
+	// location.reload()
 }
 
 class LeftCircle {
